@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sporthouse Group</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #000;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        
+        /* Scroll animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .slide-in-left {
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        
+        .slide-in-left.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .slide-in-right {
+            opacity: 0;
+            transform: translateX(50px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        
+        .slide-in-right.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        /* Navigation - Mutant style minimal */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 40px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            mix-blend-mode: difference;
+            transition: padding 0.3s ease;
+        }
+        
+        nav.scrolled {
+            padding: 20px 60px;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+        }
+        
+        .logo {
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        .nav-right {
+            display: flex;
+            gap: 60px;
+            font-size: 14px;
+        }
+        
+        .nav-right a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            transition: opacity 0.3s ease;
+        }
+        
+        .nav-right a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: #fff;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-right a:hover::after {
+            width: 100%;
+        }
+        
+        /* Hero - Full screen video/image like Lando */
+        .hero {
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+        }
+        
+        .hero-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            text-align: center;
+            width: 90%;
+            max-width: 1200px;
+        }
+        
+        .hero-text h1 {
+            font-size: clamp(32px, 5vw, 72px);
+            font-weight: 300;
+            line-height: 1.2;
+            max-width: 900px;
+            letter-spacing: -1px;
+            margin: 0 auto;
+            animation: fadeInUp 1.2s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Section spacing like Mutant */
+        section {
+            padding: 120px 60px;
+        }
+        
+        /* Services grid - Lando style */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2px;
+            background: #000;
+            margin: 100px 0;
+        }
+        
+        .service-card {
+            background: #0a0a0a;
+            padding: 80px 60px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+        
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .service-card:hover::before {
+            opacity: 1;
+        }
+        
+        .service-card:hover {
+            background: #111;
+            transform: scale(1.02);
+        }
+        
+        .service-card h3,
+        .service-card .subtitle,
+        .service-card p {
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .service-card:hover h3,
+        .service-card:hover .subtitle,
+        .service-card:hover p {
+            transform: translateX(10px);
+        }
+        
+        .service-number {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .service-card h3 {
+            font-size: 36px;
+            font-weight: 300;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+        
+        .service-card .subtitle {
+            font-size: 14px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 30px;
+        }
+        
+        .service-card p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #999;
+        }
+        
+        /* Partners section - horizontal scroll like Lando */
+        .partners-container {
+            margin: 120px 0;
+            overflow: hidden;
+        }
+        
+        .partners-title {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #666;
+            margin-bottom: 60px;
+            padding: 0 60px;
+        }
+        
+        .partners-scroll {
+            display: flex;
+            gap: 40px;
+            cursor: grab;
+            user-select: none;
+            transition: transform 0.3s ease-out;
+        }
+        
+        .partners-scroll.grabbing {
+            cursor: grabbing;
+            transition: none;
+        }
+        
+        .partners-scroll.auto-scroll {
+            transition: none;
+        }
+        
+        .partner-item {
+            flex: 0 0 200px;
+            height: 200px;
+            background: #0a0a0a;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            text-align: center;
+            padding: 30px;
+            border: 1px solid #1a1a1a;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .partner-item::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.05);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+        
+        .partner-item:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .partner-item:hover {
+            border-color: #333;
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+        
+        /* Team grid - Simple like Mutant */
+        .team-container {
+            margin: 100px 0;
+            overflow: hidden;
+        }
+        
+        .team-scroll {
+            display: flex;
+            gap: 40px;
+            cursor: grab;
+            user-select: none;
+            transition: transform 0.3s ease-out;
+        }
+        
+        .team-scroll.grabbing {
+            cursor: grabbing;
+            transition: none;
+        }
+        
+        .team-scroll.auto-scroll {
+            transition: none;
+        }
+        
+        .team-member {
+            flex: 0 0 180px;
+            text-align: center;
+        }
+        
+        .team-photo {
+            width: 100%;
+            aspect-ratio: 1;
+            background: #0a0a0a;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .team-photo::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        
+        .team-member:hover .team-photo {
+            transform: scale(1.05) rotate(2deg);
+        }
+        
+        .team-member:hover .team-photo::after {
+            opacity: 1;
+        }
+        
+        .team-member h4 {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .team-member p {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            padding: 200px 60px;
+            text-align: center;
+        }
+        
+        .cta-section h2 {
+            font-size: clamp(40px, 6vw, 96px);
+            font-weight: 300;
+            line-height: 1.1;
+            letter-spacing: -2px;
+            margin-bottom: 60px;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            padding: 20px 50px;
+            background: #fff;
+            color: #000;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 40px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.1);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+        
+        .cta-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .cta-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(255,255,255,0.3);
+        }
+        
+        /* Footer - Clean like both sites */
+        footer {
+            padding: 80px 60px 40px;
+            border-top: 1px solid #1a1a1a;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 60px;
+            margin-bottom: 80px;
+        }
+        
+        .footer-col h5 {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #666;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .footer-col p,
+        .footer-col a {
+            font-size: 14px;
+            color: #999;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 10px;
+            line-height: 1.6;
+            transition: all 0.3s ease;
+            position: relative;
+            padding-left: 0;
+        }
+        
+        .footer-col a:hover {
+            color: #fff;
+            padding-left: 10px;
+        }
+        
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 40px;
+            border-top: 1px solid #1a1a1a;
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .social-links a {
+            color: #666;
+            text-decoration: none;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .social-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: #fff;
+            transition: width 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            color: #fff;
+            transform: translateY(-2px);
+        }
+        
+        .social-links a:hover::after {
+            width: 100%;
+        }
+        
+        /* Location tag like Mutant */
+        .location {
+            position: fixed;
+            bottom: 40px;
+            right: 60px;
+            font-size: 13px;
+            color: #666;
+            z-index: 100;
+        }
+        
+        @media (max-width: 968px) {
+            nav, section, .cta-section, footer {
+                padding-left: 30px;
+                padding-right: 30px;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .hero-text {
+                left: 30px;
+                right: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">SPORTHOUSE GROUP</div>
+        <div class="nav-right">
+            <a href="#about">about</a>
+            <a href="#contact">contact</a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero" id="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-text">
+            <h1>Sports content and communication is the name of our game</h1>
+        </div>
+    </section>
+
+    <!-- Services -->
+    <section>
+        <div class="services-grid">
+            <div class="service-card fade-in">
+                <div class="service-number">01</div>
+                <h3>Sporthouse Group</h3>
+                <div class="subtitle">Social Content</div>
+                <p>Creating engaging social content that resonates with sports fans and builds authentic connections with your audience.</p>
+            </div>
+            
+            <div class="service-card fade-in">
+                <div class="service-number">02</div>
+                <h3>Friends Of Sports</h3>
+                <div class="subtitle">Content Label</div>
+                <p>Your trusted content label for innovative storytelling and branded content that brings sports narratives to life.</p>
+            </div>
+            
+            <div class="service-card fade-in">
+                <div class="service-number">03</div>
+                <h3>Deklat Binnen</h3>
+                <div class="subtitle">Premium Productions</div>
+                <p>High-end production services delivering cinematic sports content, documentaries, and live event coverage.</p>
+            </div>
+            
+            <div class="service-card fade-in">
+                <div class="service-number">04</div>
+                <h3>Kiss The Badge</h3>
+                <div class="subtitle">Creative Marketing</div>
+                <p>Strategic creative marketing that captures the passion of sports culture and drives meaningful brand engagement.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Partners -->
+    <div class="partners-container fade-in">
+        <div class="partners-title">Teaming up with</div>
+        <div class="partners-scroll auto-scroll" id="partnersScroll">
+            <div class="partner-item">Belgian Red Devils</div>
+            <div class="partner-item">Kevin De Bruyne</div>
+            <div class="partner-item">Max Verstappen</div>
+            <div class="partner-item">Play Sports</div>
+            <div class="partner-item">Club Brugge</div>
+            <div class="partner-item">RSCA</div>
+            <div class="partner-item">Sporza</div>
+            <div class="partner-item">Red Flames</div>
+            <div class="partner-item">Pro League</div>
+            <div class="partner-item">RBFA</div>
+            <div class="partner-item">Lotto Dstny</div>
+            <div class="partner-item">KRC Genk</div>
+            <div class="partner-item">Jupiler</div>
+            <div class="partner-item">AG Insurance</div>
+            <div class="partner-item">Unibet</div>
+            <div class="partner-item">Dries Mertens</div>
+            <!-- Duplicates for seamless loop -->
+            <div class="partner-item">Belgian Red Devils</div>
+            <div class="partner-item">Kevin De Bruyne</div>
+            <div class="partner-item">Max Verstappen</div>
+            <div class="partner-item">Play Sports</div>
+            <div class="partner-item">Club Brugge</div>
+            <div class="partner-item">RSCA</div>
+            <div class="partner-item">Sporza</div>
+            <div class="partner-item">Red Flames</div>
+            <div class="partner-item">Pro League</div>
+            <div class="partner-item">RBFA</div>
+            <div class="partner-item">Lotto Dstny</div>
+            <div class="partner-item">KRC Genk</div>
+            <div class="partner-item">Jupiler</div>
+            <div class="partner-item">AG Insurance</div>
+            <div class="partner-item">Unibet</div>
+            <div class="partner-item">Dries Mertens</div>
+            <!-- Third set for extra smoothness -->
+            <div class="partner-item">Belgian Red Devils</div>
+            <div class="partner-item">Kevin De Bruyne</div>
+            <div class="partner-item">Max Verstappen</div>
+            <div class="partner-item">Play Sports</div>
+            <div class="partner-item">Club Brugge</div>
+            <div class="partner-item">RSCA</div>
+            <div class="partner-item">Sporza</div>
+            <div class="partner-item">Red Flames</div>
+            <div class="partner-item">Pro League</div>
+            <div class="partner-item">RBFA</div>
+            <div class="partner-item">Lotto Dstny</div>
+            <div class="partner-item">KRC Genk</div>
+            <div class="partner-item">Jupiler</div>
+            <div class="partner-item">AG Insurance</div>
+            <div class="partner-item">Unibet</div>
+            <div class="partner-item">Dries Mertens</div>
+        </div>
+    </div>
+
+    <!-- Team Preview -->
+    <section>
+        <h2 class="fade-in" style="font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: #666; margin-bottom: 60px;">Meet the team</h2>
+        <div class="team-container">
+            <div class="team-scroll auto-scroll" id="teamScroll">
+                <div class="team-member fade-in">
+                    <div class="team-photo"></div>
+                    <h4>Sam Kerkhofs</h4>
+                    <p>Managing Director</p>
+                </div>
+                <div class="team-member fade-in">
+                    <div class="team-photo"></div>
+                    <h4>Tomas Van Den Spiegel</h4>
+                    <p>Partner</p>
+                </div>
+                <div class="team-member fade-in">
+                    <div class="team-photo"></div>
+                    <h4>Sarah Rootsaert</h4>
+                    <p>Administrative Manager</p>
+                </div>
+                <div class="team-member fade-in">
+                    <div class="team-photo"></div>
+                    <h4>Evert Winkelmans</h4>
+                    <p>Football Encyclopedia</p>
+                </div>
+                <div class="team-member fade-in">
+                    <div class="team-photo"></div>
+                    <h4>Thijs Muësen</h4>
+                    <p>Operations Manager</p>
+                </div>
+                <div class="team-member fade-in">
+                    <div class="team-photo"></div>
+                    <h4>Leroy Deltour</h4>
+                    <p>Content Coördinator</p>
+                </div>
+                <!-- Duplicates for seamless loop -->
+                <div class="team-member fade-in">
+                    <div class="team-photo"></div>
+                    <h4>Sam Kerkhofs</h4>
+                    <p>Managing Director</p>
+                </div>
+                <div class="team-member fade-in">
+                    <div class="team-photo"></div>
+                    <h4>Tomas Van Den Spiegel</h4>
+                    <p>Partner</p>
+                </div>
+                <div class="team-member fade-in">
+                    <div class="team-photo"></div>
+                    <h4>Sarah Rootsaert</h4>
+                    <p>Administrative Manager</p>
+                </div>
+                <div class="team-member fade-in">
+                    <div class="team-photo"></div>
+                    <h4>Evert Winkelmans</h4>
+                    <p>Football Encyclopedia</p>
+                </div>
+                <div class="team-member fade-in">
+                    <div class="team-photo"></div>
+                    <h4>Thijs Muësen</h4>
+                    <p>Operations Manager</p>
+                </div>
+                <div class="team-member fade-in">
+                    <div class="team-photo"></div>
+                    <h4>Leroy Deltour</h4>
+                    <p>Content Coördinator</p>
+                </div>
+                <!-- Third set -->
+                <div class="team-member fade-in">
+                    <div class="team-photo"></div>
+                    <h4>Sam Kerkhofs</h4>
+                    <p>Managing Director</p>
+                </div>
+                <div class="team-member fade-in">
+                    <div class="team-photo"></div>
+                    <h4>Tomas Van Den Spiegel</h4>
+                    <p>Partner</p>
+                </div>
+                <div class="team-member fade-in">
+                    <div class="team-photo"></div>
+                    <h4>Sarah Rootsaert</h4>
+                    <p>Administrative Manager</p>
+                </div>
+                <div class="team-member fade-in">
+                    <div class="team-photo"></div>
+                    <h4>Evert Winkelmans</h4>
+                    <p>Football Encyclopedia</p>
+                </div>
+                <div class="team-member fade-in">
+                    <div class="team-photo"></div>
+                    <h4>Thijs Muësen</h4>
+                    <p>Operations Manager</p>
+                </div>
+                <div class="team-member fade-in">
+                    <div class="team-photo"></div>
+                    <h4>Leroy Deltour</h4>
+                    <p>Content Coördinator</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section fade-in">
+        <h2>Ready to create something unforgettable?</h2>
+        <a href="#contact" class="cta-button">Get in touch</a>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h5>Contact</h5>
+                <p>Harensesteenweg 230<br>1800 Vilvoorde<br>Belgium</p>
+            </div>
+            
+            <div class="footer-col">
+                <h5>Services</h5>
+                <a href="#">Social Content</a>
+                <a href="#">Content Label</a>
+                <a href="#">Premium Productions</a>
+                <a href="#">Creative Marketing</a>
+            </div>
+            
+            <div class="footer-col">
+                <h5>Company</h5>
+                <a href="#">About</a>
+                <a href="#">Team</a>
+                <a href="#">Careers</a>
+                <a href="#">Contact</a>
+            </div>
+            
+            <div class="footer-col">
+                <h5>Follow</h5>
+                <a href="#">Instagram</a>
+                <a href="#">LinkedIn</a>
+                <a href="#">Facebook</a>
+                <a href="#">X</a>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <div>© 2025 Sporthouse Group NV</div>
+            <div class="social-links">
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Location tag -->
+    <div class="location">Vilvoorde — Belgium</div>
+
+    <script>
+        // Continuous scroll carousel functionality
+        function initAutoScroll(carousel, speed, direction) {
+            let position = 0;
+            let isDragging = false;
+            let startX = 0;
+            let currentTranslate = 0;
+            let prevTranslate = 0;
+            let animationId = null;
+            
+            const itemWidth = 240; // 200px + 40px gap for partners, 220px for team
+            const totalItems = carousel.children.length / 3;
+            const cycleWidth = itemWidth * totalItems;
+
+            function animate() {
+                if (!isDragging) {
+                    position += speed * direction;
+                    
+                    // Loop seamlessly
+                    if (direction === -1 && position <= -cycleWidth) {
+                        position = 0;
+                    } else if (direction === 1 && position >= 0) {
+                        position = -cycleWidth;
+                    }
+                    
+                    carousel.style.transform = `translateX(${position}px)`;
+                }
+                animationId = requestAnimationFrame(animate);
+            }
+
+            // Start animation
+            animate();
+
+            // Drag functionality
+            carousel.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                startX = e.clientX;
+                prevTranslate = position;
+                carousel.classList.add('grabbing');
+                carousel.style.transition = 'none';
+            });
+
+            carousel.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                e.preventDefault();
+                const currentX = e.clientX;
+                const diff = currentX - startX;
+                position = prevTranslate + diff;
+                carousel.style.transform = `translateX(${position}px)`;
+            });
+
+            function endDrag() {
+                if (!isDragging) return;
+                isDragging = false;
+                carousel.classList.remove('grabbing');
+                
+                // Normalize position for seamless loop
+                while (position > 0) position -= cycleWidth;
+                while (position < -cycleWidth * 2) position += cycleWidth;
+                
+                carousel.style.transform = `translateX(${position}px)`;
+            }
+
+            carousel.addEventListener('mouseup', endDrag);
+            carousel.addEventListener('mouseleave', endDrag);
+
+            // Pause on hover
+            carousel.addEventListener('mouseenter', () => {
+                if (!isDragging) {
+                    carousel.style.animationPlayState = 'paused';
+                }
+            });
+
+            carousel.addEventListener('mouseleave', () => {
+                carousel.style.animationPlayState = 'running';
+            });
+        }
+
+        // Initialize carousels with different speeds and directions
+        const partnersScroll = document.getElementById('partnersScroll');
+        const teamScroll = document.getElementById('teamScroll');
+        
+        if (partnersScroll) initAutoScroll(partnersScroll, 0.5, -1); // Move left
+        if (teamScroll) initAutoScroll(teamScroll, 0.6, 1); // Move right
+
+        // Scroll-triggered animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all animated elements
+        document.querySelectorAll('.fade-in, .slide-in-left, .slide-in-right').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Stagger animation for service cards
+        const serviceCards = document.querySelectorAll('.service-card');
+        serviceCards.forEach((card, index) => {
+            card.style.transitionDelay = `${index * 0.1}s`;
+        });
+
+        // Nav scroll effect
+        const nav = document.querySelector('nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 100) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href'))?.scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Parallax effect on hero
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const hero = document.querySelector('.hero-text');
+            if (hero) {
+                hero.style.transform = `translate(-50%, calc(-50% + ${scrolled * 0.3}px))`;
+                hero.style.opacity = 1 - (scrolled / 600);
+            }
+        });
+    </script>
+</body>
+</html>
